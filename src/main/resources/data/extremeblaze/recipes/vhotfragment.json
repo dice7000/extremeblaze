@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": {
+      "item": "extremeblaze:super_hot_fragment"
+    }
+  },
+  "pattern": [
+    "FF",
+    "FF"
+  ],
+  "result": {
+    "item": "extremeblaze:super_hot_ingot"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,15 @@
+{
+  "item.extremeblaze.super_cool_water_bucket": "超冷たい水バケツ",
+  "item.extremeblaze.super_hot_fragment": "超熱い欠片",
+  "item.extremeblaze.super_hot_ingot": "超熱いインゴット",
+  "item.extremeblaze.super_hot_sword": "超熱い剣",
+  "item.extremeblaze.super_hot_helmet": "超熱いヘルメット",
+  "item.extremeblaze.super_hot_chest": "超熱いチェストプレート",
+  "item.extremeblaze.super_hot_leggings": "超熱いレギンス",
+  "item.extremeblaze.super_hot_boots": "超熱いブーツ",
+
+  "entity.extremeblaze.extreme_blaze": "エクストリームブレイズ",
+
+  "death.attack.ebattack": "流石の%sでも鬼強いエクストリームブレイズの力には敵わなかった",
+  "death.attack.ebattack.player": "流石の%1$sでも%2$sの鬼強いエクストリームブレイズの力には敵わなかった"
+}

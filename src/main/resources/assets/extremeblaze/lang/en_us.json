@@ -1,0 +1,15 @@
+{
+  "item.extremeblaze.super_cool_water_bucket": "Super Cold Water Bucket",
+  "item.extremeblaze.super_hot_fragment": "Super Hot Fragment",
+  "item.extremeblaze.super_hot_ingot": "Super Hot Ingot",
+  "item.extremeblaze.super_hot_sword": "Super Hot Sword",
+  "item.extremeblaze.super_hot_helmet": "Super Hot Helmet",
+  "item.extremeblaze.super_hot_chest": "Super Hot Chestplate",
+  "item.extremeblaze.super_hot_leggings": "Super Hot Leggings",
+  "item.extremeblaze.super_hot_boots": "Super Hot Boots",
+
+  "entity.extremeblaze.extreme_blaze": "Extreme Blaze",
+
+  "death.attack.ebattack": "Even the mighty %s couldn't withstand the power of the insanely strong Extreme Blaze.",
+  "death.attack.ebattack.player": "Even the mighty %1$s couldn't withstand the power of %2$s's the insanely strong Extreme Blaze."
+}

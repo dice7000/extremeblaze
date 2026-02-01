@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "W": {
+      "item": "minecraft:water_bucket"
+    },
+    "I": {
+      "item": "minecraft:blue_ice"
+    }
+  },
+  "pattern": [
+    "III",
+    "IWI",
+    "III"
+  ],
+  "result": {
+    "item": "extremeblaze:super_cool_water_bucket"
+  },
+  "show_notification": true
+}
