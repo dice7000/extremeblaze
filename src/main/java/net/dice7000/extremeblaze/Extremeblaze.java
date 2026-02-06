@@ -40,6 +40,9 @@ public class Extremeblaze {
             event.accept(EBRegistry.VHOTFRAGMENT);
             event.accept(EBRegistry.VHOTINGOT);
         }
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+            event.accept(EBRegistry.SPAWNEGG);
+        }
     }
     @SubscribeEvent public void onServerStarting(ServerStartingEvent event) {
     }
