@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": {
+      "item": "extremeblaze:super_hot_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "H",
+    "H",
+    "I"
+  ],
+  "result": {
+    "item": "extremeblaze:super_hot_sword"
+  },
+  "show_notification": true
+}

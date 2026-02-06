@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": {
+      "item": "minecraft:blaze_rod"
+    },
+    "E": {
+      "item": "minecraft:egg"
+    }
+  },
+  "pattern": [
+    "LLL",
+    "LEL",
+    "LLL"
+  ],
+  "result": {
+    "item": "extremeblaze:extremeblaze_spawn_egg"
+  },
+  "show_notification": true
+}

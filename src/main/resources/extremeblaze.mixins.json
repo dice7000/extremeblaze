@@ -2,9 +2,11 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.dice7000.extremeblaze.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "refmap": "extremeblaze.refmap.json",
   "mixins": [
+    "LivingEntityMixin",
+    "MobMixin"
   ],
   "client": [
   ],

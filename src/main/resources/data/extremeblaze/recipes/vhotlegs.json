@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": {
+      "item": "extremeblaze:super_hot_ingot"
+    }
+  },
+  "pattern": [
+    "HHH",
+    "H H",
+    "H H"
+  ],
+  "result": {
+    "item": "extremeblaze:super_hot_leggings"
+  },
+  "show_notification": true
+}

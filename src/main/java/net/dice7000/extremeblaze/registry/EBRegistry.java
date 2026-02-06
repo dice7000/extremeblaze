@@ -12,7 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
@@ -21,12 +20,13 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.EnumMap;
 import java.util.function.Supplier;
 
 import static net.minecraft.world.item.ArmorItem.Type.*;
@@ -47,6 +47,7 @@ public class EBRegistry {
     public static final RegistryObject<Item> VHOTCHEST;
     public static final RegistryObject<Item> VHOTLEGGINGS;
     public static final RegistryObject<Item> VHOTBOOTS;
+
     static {
         VCOOLBUCKET  = EB_ITEM.register("super_cool_water_bucket",           SuperCoolBucketItem::new);
         VHOTFRAGMENT = EB_ITEM.register("super_hot_fragment"     ,           SuperHotItem::new);
@@ -59,9 +60,12 @@ public class EBRegistry {
     }
 
     public static final RegistryObject<EntityType<ExtremeBlazeEntity>> EXTREME_BLAZE_ENTITY;
+    public static final RegistryObject<Item> SPAWNEGG;
     static {
         EXTREME_BLAZE_ENTITY = EB_ENTITY.register("extreme_blaze", () -> EntityType.Builder.of
                 (ExtremeBlazeEntity::new, MobCategory.MONSTER).sized(1.0F, 2.0F).build("extreme_blaze"));
+        SPAWNEGG = EB_ITEM.register("extremeblaze_spawn_egg", () -> new ForgeSpawnEggItem
+                (EXTREME_BLAZE_ENTITY, 0xFF0000, 0xFFFF00, new Item.Properties()));
     }
 
     public static void register(IEventBus eventBus) {
@@ -111,13 +115,13 @@ public class EBRegistry {
         @Override public int getEnchantmentValue() {
             return enchantmentValue;
         }
-        @Override public SoundEvent getEquipSound() {
+        @Override public @NotNull SoundEvent getEquipSound() {
             return sound;
         }
-        @Override public Ingredient getRepairIngredient() {
+        @Override public @NotNull Ingredient getRepairIngredient() {
             return repairIngredient.get();
         }
-        @Override public String getName() {
+        @Override public @NotNull String getName() {
             return Extremeblaze.MOD_ID + ":" + name;
         }
         @Override public float getToughness() {

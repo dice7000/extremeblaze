@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": {
+      "item": "extremeblaze:super_hot_ingot"
+    }
+  },
+  "pattern": [
+    "H H",
+    "HHH",
+    "HHH"
+  ],
+  "result": {
+    "item": "extremeblaze:super_hot_chestplate"
+  },
+  "show_notification": true
+}

@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,14 +19,14 @@ import net.minecraftforge.fml.common.Mod;
 
 public class EBEvents {
     @Mod.EventBusSubscriber(modid = Extremeblaze.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public class EBModBusEvent {
+    public static class EBModBusEvent {
         @SubscribeEvent public static void registerAttributes(EntityAttributeCreationEvent event) {
             event.put(EBRegistry.EXTREME_BLAZE_ENTITY.get(), ExtremeBlazeEntity.createAttributes().build());
         }
     }
 
     @Mod.EventBusSubscriber(modid = Extremeblaze.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public class EBForgeBusEvent {
+    public static class EBForgeBusEvent {
         @SubscribeEvent
         public static void onLivingDrops(LivingDropsEvent event) {
             LivingEntity mob = event.getEntity();
@@ -45,23 +44,31 @@ public class EBEvents {
             if (player.level().isClientSide()) return;
 
             boolean fullSet =
-                    isWearing(player, EquipmentSlot.HEAD, EBRegistry.VHOTHELMET.get()) &&
+                            isWearing(player, EquipmentSlot.HEAD, EBRegistry.VHOTHELMET.get()) &&
                             isWearing(player, EquipmentSlot.CHEST, EBRegistry.VHOTCHEST.get()) &&
                             isWearing(player, EquipmentSlot.LEGS, EBRegistry.VHOTLEGGINGS.get()) &&
                             isWearing(player, EquipmentSlot.FEET, EBRegistry.VHOTBOOTS.get());
+            float damage = (float)
+                    (countItem(player, EBRegistry.VHOTFRAGMENT.get()) + (countItem(player, EBRegistry.VHOTINGOT.get()) * 4)) / 100;
 
-            Inventory inv = player.getInventory();
-            boolean hasVHotItem = (inv.contains(new ItemStack(EBRegistry.VHOTFRAGMENT.get())) ||
-                                  inv.contains(new ItemStack(EBRegistry.VHOTINGOT.get()))) && !fullSet;
-
-            if (hasVHotItem) {
-                player.hurt(EBRegistry.ebAttack((ServerLevel) player.level()), (float) 1 / 100);
+            if (damage > 0 && !fullSet) {
+                player.hurt(EBRegistry.ebAttack((ServerLevel) player.level()), damage);
             }
             ((LivingEntityMixinMethod) player).extremeblaze$setAllWearing(fullSet);
         }
 
         private static boolean isWearing(Player player, EquipmentSlot slot, Item item) {
             return player.getItemBySlot(slot).is(item);
+        }
+
+        private static int countItem(Player player, Item item) {
+            int total = 0;
+            for (ItemStack stack : player.getInventory().items) {
+                if (stack.is(item)) {
+                    total += stack.getCount();
+                }
+            }
+            return total;
         }
     }
 }
