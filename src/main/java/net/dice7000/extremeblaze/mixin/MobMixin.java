@@ -9,12 +9,8 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Mob.class)
 public abstract class MobMixin implements MobMixinMethod {
-
-    @Shadow
-    protected abstract void maybeDisableShield(Player pPlayer, ItemStack pMobItemStack, ItemStack pPlayerItemStack);
-
-    @Override
-    public void extremeblaze$rumMDS(Player pPlayer, ItemStack pMobItemStack, ItemStack pPlayerItemStack) {
+    @Shadow protected abstract void maybeDisableShield(Player pPlayer, ItemStack pMobItemStack, ItemStack pPlayerItemStack);
+    @Override public void extremeblaze$rumMDS(Player pPlayer, ItemStack pMobItemStack, ItemStack pPlayerItemStack) {
         maybeDisableShield(pPlayer, pMobItemStack, pPlayerItemStack);
     }
 }

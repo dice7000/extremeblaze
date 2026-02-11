@@ -96,15 +96,15 @@ public class ExtremeBlazeEntity extends Monster {
     @Override public float getHealth() {
         return getBucketCount() > 0 ? Float.POSITIVE_INFINITY : 0;
     }
-
+    @Override public float getMaxHealth() {
+        return Float.POSITIVE_INFINITY;
+    }
     @Override public boolean isDeadOrDying() {
         return getBucketCount() <= 0;
     }
-
     @Override public boolean isAlive() {
         return !this.isRemoved() && getBucketCount() > 0;
     }
-
     @Override public boolean doHurtTarget(Entity pEntity) {
         float f = Float.POSITIVE_INFINITY;
         float f1 = (float)this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
