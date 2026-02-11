@@ -1,9 +1,5 @@
 {
   "message_id": "ebattack",
   "scaling": "always",
-  "exhaustion": 0.1,
-
-  "bypass_armor": true,
-  "bypass_magic": true,
-  "bypass_invulnerability": true
+  "exhaustion": 0.1
 }
