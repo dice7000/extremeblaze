@@ -14,11 +14,14 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -47,6 +50,7 @@ public class EBRegistry {
     public static final RegistryObject<Item> VHOTCHEST;
     public static final RegistryObject<Item> VHOTLEGGINGS;
     public static final RegistryObject<Item> VHOTBOOTS;
+    //public static final RegistryObject<Item> REMOVE;
 
     static {
         VCOOLBUCKET  = EB_ITEM.register("super_cool_water_bucket",           SuperCoolBucketItem::new);
@@ -57,6 +61,8 @@ public class EBRegistry {
         VHOTCHEST    = EB_ITEM.register("super_hot_chestplate"   , () -> new SuperHotArmorItem(CHESTPLATE));
         VHOTLEGGINGS = EB_ITEM.register("super_hot_leggings"     , () -> new SuperHotArmorItem(LEGGINGS));
         VHOTBOOTS    = EB_ITEM.register("super_hot_boots"        , () -> new SuperHotArmorItem(BOOTS));
+
+        //REMOVE    = EB_ITEM.register("remove"                    ,           TestRemoveItem::new);
     }
 
     public static final RegistryObject<EntityType<ExtremeBlazeEntity>> EXTREME_BLAZE_ENTITY;
@@ -129,6 +135,17 @@ public class EBRegistry {
         }
         @Override public float getKnockbackResistance() {
             return knockbackResistance;
+        }
+    }
+
+    public static class TestRemoveItem extends Item {
+        public TestRemoveItem() {
+            super(new Item.Properties().stacksTo(1));
+        }
+        @Override public boolean hurtEnemy(@NotNull ItemStack pStack, @NotNull LivingEntity pTarget, LivingEntity pAttacker) {
+            if (pAttacker.level().isClientSide) return false;
+            pTarget.remove(Entity.RemovalReason.KILLED);
+            return super.hurtEnemy(pStack, pTarget, pAttacker);
         }
     }
 }

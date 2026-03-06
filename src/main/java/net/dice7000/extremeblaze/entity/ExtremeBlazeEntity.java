@@ -2,7 +2,6 @@ package net.dice7000.extremeblaze.entity;
 
 import net.dice7000.extremeblaze.item.SuperCoolBucketItem;
 import net.dice7000.extremeblaze.item.SuperHotSwordItem;
-import net.dice7000.extremeblaze.mixinmethod.MobMixinMethod;
 import net.dice7000.extremeblaze.registry.EBRegistry;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -30,6 +29,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -105,7 +105,7 @@ public class ExtremeBlazeEntity extends Monster {
     @Override public boolean isAlive() {
         return !this.isRemoved() && getBucketCount() > 0;
     }
-    @Override public boolean doHurtTarget(Entity pEntity) {
+    @Override public boolean doHurtTarget(@NotNull Entity pEntity) {
         float f = Float.POSITIVE_INFINITY;
         float f1 = (float)this.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         if (pEntity instanceof LivingEntity) {
@@ -126,7 +126,7 @@ public class ExtremeBlazeEntity extends Monster {
             }
 
             if (pEntity instanceof Player player) {
-                ((MobMixinMethod) this).extremeblaze$rumMDS(player, this.getMainHandItem(), player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
+                this.maybeDisableShield(player, this.getMainHandItem(), player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
             }
 
             this.doEnchantDamageEffects(this, pEntity);
@@ -166,13 +166,14 @@ public class ExtremeBlazeEntity extends Monster {
         return sup;
     }
 
-    @Override
-    public void remove(RemovalReason pReason) {
-        for (int i = 0; i <= (4 + getRandom().nextInt(4)); i++) {
-            ItemEntity drop = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(EBRegistry.VHOTFRAGMENT.get()));
-            drop.setDeltaMovement(new Vec3(this.getX(), this.getY() + 1, this.getZ()).normalize().scale(1.0F));
-            level().addFreshEntity(drop);
+    @Override public void remove(@NotNull RemovalReason pReason) {
+        if (entityData.get(DATA_BUCKET_COUNT) <= 0) {
+            for (int i = 0; i <= (4 + getRandom().nextInt(4)); i++) {
+                ItemEntity drop = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(EBRegistry.VHOTINGOT.get()));
+                drop.setDeltaMovement(new Vec3(this.getX(), this.getY() + 1, this.getZ()).normalize().scale(1.0F));
+                level().addFreshEntity(drop);
+            }
+            super.remove(pReason);
         }
-        super.remove(pReason);
     }
 }
