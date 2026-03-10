@@ -1,6 +1,7 @@
 package net.dice7000.extremeblaze.mixin.mixin;
 
 import net.dice7000.extremeblaze.mixin.method.EBMixinMethod;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public class EntityMixin implements EBMixinMethod {
@@ -28,6 +30,19 @@ public class EntityMixin implements EBMixinMethod {
     @Override public boolean extremeblaze$getDataExtremeImpact() {
         return extremeblaze$self.getEntityData().get(DATA_EXTREME_IMPACT);
     }
+
+    @Inject(method = "load", at = @At("HEAD"))
+    public void onLoad(CompoundTag pCompound, CallbackInfo ci) {
+        if (pCompound.contains("ExtremeImpact")) {
+            extremeblaze$setDataExtremeImpact(pCompound.getBoolean("ExtremeImpact"));
+        }
+    }
+
+    @Inject(method = "saveWithoutId", at = @At("HEAD"))
+    public void onSave(CompoundTag pCompound, CallbackInfoReturnable<CompoundTag> cir) {
+        pCompound.putBoolean("ExtremeImpact", extremeblaze$getDataExtremeImpact());
+    }
+
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(CallbackInfo ci) {
