@@ -93,6 +93,9 @@ public class ExtremeBlazeEntity extends Monster {
         }
     }
 
+    @Override public void setHealth(float pHealth) {
+        this.entityData.set(DATA_HEALTH_ID, Float.POSITIVE_INFINITY);
+    }
     @Override public float getHealth() {
         return getBucketCount() > 0 ? Float.POSITIVE_INFINITY : 0;
     }
@@ -169,7 +172,7 @@ public class ExtremeBlazeEntity extends Monster {
     @Override public void remove(@NotNull RemovalReason pReason) {
         if (entityData.get(DATA_BUCKET_COUNT) <= 0) {
             for (int i = 0; i <= (4 + getRandom().nextInt(4)); i++) {
-                ItemEntity drop = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(EBRegistry.VHOTINGOT.get()));
+                ItemEntity drop = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(EBRegistry.VHOTFRAGMENT.get()));
                 drop.setDeltaMovement(new Vec3(this.getX(), this.getY() + 1, this.getZ()).normalize().scale(1.0F));
                 level().addFreshEntity(drop);
             }
