@@ -2,7 +2,9 @@ package net.dice7000.extremeblaze.entity;
 
 import net.dice7000.extremeblaze.item.SuperCoolBucketItem;
 import net.dice7000.extremeblaze.item.SuperHotSwordItem;
+import net.dice7000.extremeblaze.mixin.method.EBMixinMethod;
 import net.dice7000.extremeblaze.registry.EBRegistry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -48,6 +50,9 @@ public class ExtremeBlazeEntity extends Monster {
         this.entityData.define(DATA_BUCKET_COUNT, 10);
     }
 
+    public void setBucketCount(int value) {
+        this.entityData.set(DATA_BUCKET_COUNT, value);
+    }
     public int getBucketCount() {
         return this.entityData.get(DATA_BUCKET_COUNT);
     }
@@ -91,6 +96,15 @@ public class ExtremeBlazeEntity extends Monster {
         } else {
             --idleAnimTimeout;
         }
+    }
+
+    @Override public CompoundTag saveWithoutId(CompoundTag pCompound) {
+        pCompound.putInt("BucketCount", this.getBucketCount());
+        return super.saveWithoutId(pCompound);
+    }
+    @Override public void load(CompoundTag pCompound) {
+        super.load(pCompound);
+        this.setBucketCount(pCompound.getInt("BucketCount"));
     }
 
     @Override public void setHealth(float pHealth) {
@@ -147,11 +161,14 @@ public class ExtremeBlazeEntity extends Monster {
                 Item handover = player.getMainHandItem().getItem();
                 if (handover instanceof SuperCoolBucketItem || handover instanceof SuperHotSwordItem) {
                     if (cooldown <= 0) {
-                        this.entityData.set(DATA_BUCKET_COUNT, getBucketCount() - 1);
+                        setBucketCount(getBucketCount() - 1);
                         if (handover instanceof SuperCoolBucketItem) {
                             level().playSound(null, this.getX(), this.getY(), this.getZ(),
                                     SoundEvents.FIRE_EXTINGUISH, SoundSource.HOSTILE, 1.0F, 1.0F);
                             cooldown = 40;
+                            ((EBMixinMethod) player).extremeblaze$setDataExtremeImpact(true);
+                            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                                    SoundEvents.ANVIL_PLACE, SoundSource.HOSTILE, 1.0F, 0.5F);
                         } else {
                             level().playSound(null, this.getX(), this.getY(), this.getZ(),
                                     SoundEvents.ANVIL_PLACE, SoundSource.HOSTILE, 1.0F, 1.0F);
@@ -162,6 +179,9 @@ public class ExtremeBlazeEntity extends Monster {
             }
             if (sup) {
                 target.hurt(EBRegistry.ebAttack((ServerLevel) this.level()), Float.POSITIVE_INFINITY);
+                ((EBMixinMethod) target).extremeblaze$setDataExtremeImpact(true);
+                target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
+                        SoundEvents.ANVIL_PLACE, SoundSource.HOSTILE, 1.0F, 0.5F);
                 this.setLastHurtByMob(target);
                 this.setTarget(target);
             }

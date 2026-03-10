@@ -2,6 +2,7 @@ package net.dice7000.extremeblaze.event;
 
 import net.dice7000.extremeblaze.Extremeblaze;
 import net.dice7000.extremeblaze.entity.ExtremeBlazeEntity;
+import net.dice7000.extremeblaze.mixin.method.EBMixinMethod;
 import net.dice7000.extremeblaze.registry.EBRegistry;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -66,7 +67,7 @@ public class EBEvents {
             LivingEntity target = event.getEntity();
             if (fullSet && pSource.is(EBRegistry.EB_ATTACK)) {
                 target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
-                        SoundEvents.ANVIL_PLACE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        SoundEvents.ANVIL_PLACE, SoundSource.HOSTILE, 1.0F, 1.0F);
                 event.setCanceled(true);
             }
         }
@@ -75,8 +76,12 @@ public class EBEvents {
             LivingEntity target = event.getEntity();
             if (fullSet && pSource.is(EBRegistry.EB_ATTACK)) {
                 target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
-                        SoundEvents.ANVIL_PLACE, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        SoundEvents.ANVIL_PLACE, SoundSource.HOSTILE, 1.0F, 1.0F);
                 event.setCanceled(true);
+            } else if (pSource.is(EBRegistry.EB_ATTACK)) {
+                ((EBMixinMethod) target).extremeblaze$setDataExtremeImpact(true);
+                target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
+                        SoundEvents.ANVIL_PLACE, SoundSource.HOSTILE, 1.0F, 0.5F);
             }
         }
     }
