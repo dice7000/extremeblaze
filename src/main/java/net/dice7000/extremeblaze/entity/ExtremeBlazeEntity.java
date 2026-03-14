@@ -207,7 +207,7 @@ public class ExtremeBlazeEntity extends Monster {
 
     @Override public void remove(@NotNull RemovalReason pReason) {
         if (entityData.get(DATA_BUCKET_COUNT) <= 0 || isRemoved() || isDeadOrDying() || shouldDoRemove) {
-            if (entityData.get(DATA_BUCKET_COUNT) <= 0 && getRemovalReason() == RemovalReason.KILLED) {
+            if (entityData.get(DATA_BUCKET_COUNT) <= 0 || getRemovalReason() == RemovalReason.KILLED) {
                 for (int i = 0; i <= (4 + getRandom().nextInt(4)); i++) {
                     ItemEntity drop = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(),
                             new ItemStack(EBRegistry.VHOTFRAGMENT.get()));
