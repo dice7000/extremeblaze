@@ -144,7 +144,10 @@ public class EBRegistry {
         }
         @Override public boolean hurtEnemy(@NotNull ItemStack pStack, @NotNull LivingEntity pTarget, LivingEntity pAttacker) {
             if (pAttacker.level().isClientSide) return false;
-            pTarget.remove(Entity.RemovalReason.KILLED);
+            if (pTarget instanceof ExtremeBlazeEntity eb) {
+                eb.doTickDeath(true);
+            }
+            //pTarget.remove(Entity.RemovalReason.KILLED);
             return super.hurtEnemy(pStack, pTarget, pAttacker);
         }
     }

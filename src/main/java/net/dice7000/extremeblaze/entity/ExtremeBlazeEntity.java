@@ -43,6 +43,7 @@ public class ExtremeBlazeEntity extends Monster {
 
     public ExtremeBlazeEntity(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
+        setMaxUpStep(400.0F);
     }
 
     @Override protected void defineSynchedData() {
@@ -71,6 +72,11 @@ public class ExtremeBlazeEntity extends Monster {
                 .add(Attributes.ATTACK_DAMAGE, 2048D)
                 ;
     }
+    boolean b = false;
+
+    public void doTickDeath(boolean b) {
+        this.b = b;
+    }
 
     @Override public void tick() {
         super.tick();
@@ -87,6 +93,8 @@ public class ExtremeBlazeEntity extends Monster {
         if (level().isClientSide) {
             setupAnimState();
         }
+
+        if (b) tickDeath();
     }
 
     private void setupAnimState() {
@@ -189,12 +197,23 @@ public class ExtremeBlazeEntity extends Monster {
         return sup;
     }
 
+    boolean shouldDoRemove = false;
+    @Override protected void tickDeath() {
+        super.tickDeath();
+        if (deathTime >= 20) {
+            shouldDoRemove = true;
+        }
+    }
+
     @Override public void remove(@NotNull RemovalReason pReason) {
-        if (entityData.get(DATA_BUCKET_COUNT) <= 0) {
-            for (int i = 0; i <= (4 + getRandom().nextInt(4)); i++) {
-                ItemEntity drop = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(EBRegistry.VHOTFRAGMENT.get()));
-                drop.setDeltaMovement(new Vec3(this.getX(), this.getY() + 1, this.getZ()).normalize().scale(1.0F));
-                level().addFreshEntity(drop);
+        if (entityData.get(DATA_BUCKET_COUNT) <= 0 || isRemoved() || isDeadOrDying() || shouldDoRemove) {
+            if (entityData.get(DATA_BUCKET_COUNT) <= 0 && getRemovalReason() == RemovalReason.KILLED) {
+                for (int i = 0; i <= (4 + getRandom().nextInt(4)); i++) {
+                    ItemEntity drop = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(),
+                            new ItemStack(EBRegistry.VHOTFRAGMENT.get()));
+                    drop.setDeltaMovement(new Vec3(this.getX(), this.getY() + 1, this.getZ()).normalize().scale(1.0F));
+                    level().addFreshEntity(drop);
+                }
             }
             super.remove(pReason);
         }
