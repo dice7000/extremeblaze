@@ -1,5 +1,6 @@
 package net.dice7000.extremeblaze.entity;
 
+import com.mojang.logging.LogUtils;
 import net.dice7000.extremeblaze.item.SuperCoolBucketItem;
 import net.dice7000.extremeblaze.item.SuperHotSwordItem;
 import net.dice7000.extremeblaze.mixin.method.EBMixinMethod;
@@ -12,11 +13,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -29,14 +28,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class ExtremeBlazeEntity extends Monster {
-    private static final EntityDataAccessor<Integer> DATA_BUCKET_COUNT = SynchedEntityData.defineId(ExtremeBlazeEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_BUCKET_COUNT = SynchedEntityData.defineId
+            (ExtremeBlazeEntity.class, EntityDataSerializers.INT);
     private int cooldown = 0;
     public final AnimationState idleAnimState = new AnimationState();
     private int idleAnimTimeout = 0;
@@ -44,6 +46,7 @@ public class ExtremeBlazeEntity extends Monster {
     public ExtremeBlazeEntity(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         setMaxUpStep(400.0F);
+        this.entityData.set(DATA_BUCKET_COUNT,10);
     }
 
     @Override protected void defineSynchedData() {
@@ -72,20 +75,17 @@ public class ExtremeBlazeEntity extends Monster {
                 .add(Attributes.ATTACK_DAMAGE, 2048D)
                 ;
     }
-    boolean b = false;
 
-    public void doTickDeath(boolean b) {
-        this.b = b;
-    }
-
+    int tickCounter = 0;
     @Override public void tick() {
         super.tick();
+        tickCounter++;
         if (!(cooldown <= 0)) cooldown--;
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide && isAlive()) {
             AABB box = this.getBoundingBox().inflate(0.2);
             List<Entity> list = this.level().getEntities(this, box, e -> e instanceof LivingEntity);
             for (Entity e : list) {
-                if (e instanceof LivingEntity target) {
+                if (e instanceof LivingEntity target && !(e instanceof ExtremeBlazeEntity)) {
                     target.hurt(EBRegistry.ebAttack((ServerLevel) target.level()), Float.POSITIVE_INFINITY);
                 }
             }
@@ -93,8 +93,7 @@ public class ExtremeBlazeEntity extends Monster {
         if (level().isClientSide) {
             setupAnimState();
         }
-
-        if (b) tickDeath();
+        setHealth(getMaxHealth());
     }
 
     private void setupAnimState() {
@@ -114,7 +113,6 @@ public class ExtremeBlazeEntity extends Monster {
         super.load(pCompound);
         this.setBucketCount(pCompound.getInt("BucketCount"));
     }
-
     @Override public void setHealth(float pHealth) {
         this.entityData.set(DATA_HEALTH_ID, Float.POSITIVE_INFINITY);
     }
@@ -123,12 +121,6 @@ public class ExtremeBlazeEntity extends Monster {
     }
     @Override public float getMaxHealth() {
         return Float.POSITIVE_INFINITY;
-    }
-    @Override public boolean isDeadOrDying() {
-        return getBucketCount() <= 0;
-    }
-    @Override public boolean isAlive() {
-        return !this.isRemoved() && getBucketCount() > 0;
     }
     @Override public boolean doHurtTarget(@NotNull Entity pEntity) {
         float f = Float.POSITIVE_INFINITY;
@@ -160,9 +152,16 @@ public class ExtremeBlazeEntity extends Monster {
         return flag;
     }
 
+    @Override public @Nullable SpawnGroupData finalizeSpawn(
+            ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason,
+            @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+        setBucketCount(10);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    }
+
     @Override public boolean hurt(DamageSource pSource, float pAmount) {
         Entity attacker = pSource.getEntity();
-        boolean sup = super.hurt(pSource, pAmount);
+        boolean superHurt = super.hurt(pSource, pAmount);
 
         if (!this.level().isClientSide && attacker instanceof LivingEntity target) {
             if (target instanceof Player player) {
@@ -185,7 +184,7 @@ public class ExtremeBlazeEntity extends Monster {
                     return false;
                 }
             }
-            if (sup) {
+            if (superHurt) {
                 target.hurt(EBRegistry.ebAttack((ServerLevel) this.level()), Float.POSITIVE_INFINITY);
                 ((EBMixinMethod) target).extremeblaze$setDataExtremeImpact(true);
                 target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
@@ -194,7 +193,7 @@ public class ExtremeBlazeEntity extends Monster {
                 this.setTarget(target);
             }
         }
-        return sup;
+        return superHurt;
     }
 
     boolean shouldDoRemove = false;
@@ -202,11 +201,12 @@ public class ExtremeBlazeEntity extends Monster {
         super.tickDeath();
         if (deathTime >= 20) {
             shouldDoRemove = true;
+            LogUtils.getLogger().info(this.toString());
         }
     }
 
     @Override public void remove(@NotNull RemovalReason pReason) {
-        if (entityData.get(DATA_BUCKET_COUNT) <= 0 || isRemoved() || isDeadOrDying() || shouldDoRemove) {
+        if (entityData.get(DATA_BUCKET_COUNT) <= 0 || isRemoved() || super.isDeadOrDying() || shouldDoRemove) {
             if (entityData.get(DATA_BUCKET_COUNT) <= 0 || getRemovalReason() == RemovalReason.KILLED) {
                 for (int i = 0; i <= (4 + getRandom().nextInt(4)); i++) {
                     ItemEntity drop = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(),

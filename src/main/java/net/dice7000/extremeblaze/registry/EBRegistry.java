@@ -14,14 +14,11 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -135,20 +132,6 @@ public class EBRegistry {
         }
         @Override public float getKnockbackResistance() {
             return knockbackResistance;
-        }
-    }
-
-    public static class TestRemoveItem extends Item {
-        public TestRemoveItem() {
-            super(new Item.Properties().stacksTo(1));
-        }
-        @Override public boolean hurtEnemy(@NotNull ItemStack pStack, @NotNull LivingEntity pTarget, LivingEntity pAttacker) {
-            if (pAttacker.level().isClientSide) return false;
-            if (pTarget instanceof ExtremeBlazeEntity eb) {
-                eb.doTickDeath(true);
-            }
-            //pTarget.remove(Entity.RemovalReason.KILLED);
-            return super.hurtEnemy(pStack, pTarget, pAttacker);
         }
     }
 }

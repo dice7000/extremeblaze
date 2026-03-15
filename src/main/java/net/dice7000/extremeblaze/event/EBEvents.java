@@ -17,6 +17,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -82,6 +83,16 @@ public class EBEvents {
                 ((EBMixinMethod) target).extremeblaze$setDataExtremeImpact(true);
                 target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
                         SoundEvents.ANVIL_PLACE, SoundSource.HOSTILE, 1.0F, 0.5F);
+            }
+        }
+
+        @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+        public static void canceledHurtObserver(LivingHurtEvent event) {
+            if (event.getSource().is(EBRegistry.EB_ATTACK) && !fullSet) {
+                event.setCanceled(false);
+                if (event.getAmount() < 0) {
+                    event.setAmount(1);
+                }
             }
         }
     }
